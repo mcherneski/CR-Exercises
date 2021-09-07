@@ -6,6 +6,7 @@ import pandas as pd
 import re
 import requests
 from datetime import date
+import time
 
 # Create the python dictionaries (arrays) to store the information we get back from the API. These dicts are prefixed with an a_ to clarify they are arrays.
 a_away_code = []
@@ -48,7 +49,7 @@ def GetRequestedDate():
         requestedDate = (date.today()).strftime("%Y-%m-%d")
     if requestedDate:
 #       Verify the user input the date in our requested format. If it doesn't, it shows an error and reruns the GetRequestedDate function.
-        matched = re.match("[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]", requestedDate)
+        matched = re.match("[1-2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]", requestedDate)
         is_match = bool(matched)
         if is_match:
             return(requestedDate)
@@ -61,15 +62,26 @@ def InvokeApiRequest(requestURL):
     try:
         data = requests.get(requestURL)
         return data
-# Return the contents of the data variable from function for later use. 
+#   Return the contents of the data variable from function for later use. 
     except requests.exceptions.Timeout:
-# In case of timeout, try to query API again. 
-        print("We are heving issues communicating with the API... \n Trying again...")
-        InvokeApiRequest(requestURL)
+        while "Invalid response...":
+            reply = (input("We are heving issues communicating with the API... \n Try again? [Y/N]")).capitalize().strip()
+            if (reply == 'Y' or reply == 'YES'):
+                InvokeApiRequest(requestURL)
+            if (reply == 'N' or reply == 'NO'):
+                print("Error: Could not reach API server.")
+                time.sleep(5)
+                sys.exit()
     except requests.exceptions.RequestException as e:
-# Handles all other non-timeout related API errors. 
-        print("Error with web request.")
-        raise SystemExit(e)
+# Handles all other non-timeout related API errors. Allows retry but errors could be due to malformed URI. 
+         while "Invalid response...":
+            reply = (input("Error with web request. Try again? [Y/N]")).capitalize().strip()
+            if (reply == 'Y' or reply == 'YES'):
+                ExportGamedayData()
+            if (reply == 'N' or reply == 'NO'):
+                print("Error: Could not reach API server.")
+                time.sleep(5)
+                raise SystemExit(e)
 
 def CreateCsvFile(requestedDate, gameday_DF):
 # Create the CSV file in the script's directory. Will exit with succsess or failure. Last function run in program.
@@ -92,7 +104,7 @@ def CreateCsvFile(requestedDate, gameday_DF):
                 sys.exit()
 
 def ExportGamedayData():
-# Main function which calls other functions from above.
+#   Main function which calls other functions from above. Called on last line of program.
 #   Get user's requested date and parse to API request URI
     requestedDate = GetRequestedDate()
     requestAPIUrl = "http://gd2.mlb.com/components/game/mlb/year_{}/month_{}/day_{}/grid.json".format(str(requestedDate[0:4]), str(requestedDate[5:7]), str(requestedDate[8:10]))
