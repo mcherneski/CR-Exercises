@@ -7,7 +7,7 @@ import re
 import requests
 from datetime import date
 
-# Create the python dictionaries (arrays) to store the information we get back from the API
+# Create the python dictionaries (arrays) to store the information we get back from the API. These dicts are prefixed with an a_ to clarify they are arrays.
 a_away_code = []
 a_away_file_code = []
 a_away_name_abbrev = []
@@ -42,11 +42,12 @@ a_venue_id = []
 
 
 def GetRequestedDate():
-    # Get the date from the user, if they do not specify, today is selected. 
+# Get the date from the user, if they do not specify, today is selected. 
     requestedDate = input("Please enter in a date. Format: YYYY-MM-DD. Leave blank for today. \n  Date: ")
     if not requestedDate:
         requestedDate = (date.today()).strftime("%Y-%m-%d")
     if requestedDate:
+#       Verify the user input the date in our requested format. If it doesn't, it shows an error and reruns the GetRequestedDate function.
         matched = re.match("[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]", requestedDate)
         is_match = bool(matched)
         if is_match:
@@ -56,47 +57,61 @@ def GetRequestedDate():
             GetRequestedDate()
 
 def InvokeApiRequest(requestURL):
+# Function responsible for the API request. Handles timeout exceptions from the requests module. 
     try:
         data = requests.get(requestURL)
         return data
+# Return the contents of the data variable from function for later use. 
     except requests.exceptions.Timeout:
+# In case of timeout, try to query API again. 
         print("We are heving issues communicating with the API... \n Trying again...")
         InvokeApiRequest(requestURL)
     except requests.exceptions.RequestException as e:
+# Handles all other non-timeout related API errors. 
         print("Error with web request.")
         raise SystemExit(e)
 
 def CreateCsvFile(requestedDate, gameday_DF):
+# Create the CSV file in the script's directory. Will exit with succsess or failure. Last function run in program.
     csv_file = (os.path.dirname(os.path.realpath(__file__))) + "\\" + requestedDate + "_Gameday_Data.csv"
     try:
+#       The lines below use the Pandas dataframe we create in the main function and uses the .to_csv method from Pandas to create the csv file. 
         gameday_DF.to_csv(csv_file, index=False)
         print("CSV Exported. Please check the working directory for your file.")
         sys.exit()
+#       If the file is created, call sys.exit()
     except IOError:
+#   Pandas will throw the IOError if the user has a file open with the name it wants to overwrite. This will ask them to close the file and retry the creation. 
         while "Invalid response...":
+#       Loop is to handle invalid responses to the question. 
             reply = input("Error writing to file! You may have the file you're trying to write to open. \n Please close the file and try again. \n Try Again? [Y/N]").capitalize().strip()
             if (reply == 'Y' or reply == 'YES'):
                 CreateCsvFile(requestedDate, gameday_DF)
             if (reply == 'N' or reply == 'NO'):
-                sys.exit("Could not export to file.")
+                print("Could not write results to file. Exiting...")
+                sys.exit()
 
-def GetGamedayData():
+def ExportGamedayData():
+# Main function which calls other functions from above.
+#   Get user's requested date and parse to API request URI
     requestedDate = GetRequestedDate()
     requestAPIUrl = "http://gd2.mlb.com/components/game/mlb/year_{}/month_{}/day_{}/grid.json".format(str(requestedDate[0:4]), str(requestedDate[5:7]), str(requestedDate[8:10]))
-
+#   Receive and parse the API response. 
     apiResponse = (InvokeApiRequest(requestAPIUrl)).json()
-    
     try:
         gamedayDataJson = apiResponse["data"]["games"]["game"]
+#       Try block handles non-erroneus failures, such as a day which no games were played.
     except:
         reply = (input("No game data for that date. \n Try another date? [Y/N]")).capitalize().strip()
+#       Capitalize and remove white spaces so the below if statements are less prone to input variance errors. 
         if (reply == 'Y' or reply == 'YES'):
-            GetGamedayData()
+            ExportGamedayData()
+#       If there is no data for the specified date, we ask the user if they would like to try another rather than rerunning the program. 
         elif (reply == 'N' or reply == 'NO'):
             sys.exit("Could not find data for requested day.")
         else:
             print("Please choose Y or N. (Yes or No)")        
-        
+#   Below, run the gamedayDataJson and extract values. Add them to the arrays created at top of script. 
     for game in gamedayDataJson:
         a_away_code.append(game["away_code"])
         a_away_file_code.append(game["away_file_code"])
@@ -129,6 +144,7 @@ def GetGamedayData():
         a_top_inning.append(game["top_inning"])
         a_venue.append(game["venue"])
         a_venue_id.append(game["venue_id"])
+#   Combine all gameday information into a single dictionary. 
     gamedayDict = {
         "away_code": a_away_code,
         "away_file_code": a_away_file_code,
@@ -162,6 +178,7 @@ def GetGamedayData():
         "venue": a_venue,
         "venue_id": a_venue_id
     }
+#   Create a Pandas dataframe with the gamedayDict we created above, specify column headers. 
     gameday_DF = pd.DataFrame(gamedayDict, columns = [
         "away_code",
         "away_file_code",
@@ -195,6 +212,8 @@ def GetGamedayData():
         "venue",
         "venue_id"
     ])
+#   Using a function we created above, export the Pandas gameday dataframe to csv.
     CreateCsvFile(requestedDate, gameday_DF)
-    
-GetGamedayData()
+
+# Call the main function. 
+ExportGamedayData()
