@@ -41,7 +41,6 @@ a_top_inning = []
 a_venue = []
 a_venue_id = []
 
-
 def GetRequestedDate():
 # Get the date from the user, if they do not specify, today is selected. 
     requestedDate = input("Please enter in a date. Format: YYYY-MM-DD. Leave blank for today. \n  Date: ")
