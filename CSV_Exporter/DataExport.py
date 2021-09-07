@@ -7,10 +7,7 @@ import re
 import requests
 from datetime import date
 
-# Create our "Static" variables. 
-today = (date.today()).strftime("%Y-%m-%d")
-filepath = os.path.dirname(os.path.realpath(__file__))
-
+# Create the python dictionaries (arrays) to store the information we get back from the API
 a_away_code = []
 a_away_file_code = []
 a_away_name_abbrev = []
@@ -43,10 +40,12 @@ a_top_inning = []
 a_venue = []
 a_venue_id = []
 
+
 def GetRequestedDate():
+    # Get the date from the user, if they do not specify, today is selected. 
     requestedDate = input("Please enter in a date. Format: YYYY-MM-DD. Leave blank for today. \n  Date: ")
     if not requestedDate:
-        requestedDate = today
+        requestedDate = (date.today()).strftime("%Y-%m-%d")
     if requestedDate:
         matched = re.match("[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]", requestedDate)
         is_match = bool(matched)
@@ -68,7 +67,7 @@ def InvokeApiRequest(requestURL):
         raise SystemExit(e)
 
 def CreateCsvFile(requestedDate, gameday_DF):
-    csv_file = filepath + "\\" + requestedDate + "_Gameday_Data.csv"
+    csv_file = (os.path.dirname(os.path.realpath(__file__))) + "\\" + requestedDate + "_Gameday_Data.csv"
     try:
         gameday_DF.to_csv(csv_file, index=False)
         print("CSV Exported. Please check the working directory for your file.")
