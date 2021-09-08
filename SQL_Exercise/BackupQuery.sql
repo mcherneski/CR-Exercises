@@ -3,13 +3,23 @@ select
     concat(pm.name_last, ', ' ,pm.name_first, ' ' ,pm.name_middle) as 'Batter Name',
     -- At Bats
     (COUNT(IF(
-		pbp.event_type != "walk"
-        or pbp.event_type != "intent_walk"
-        or pbp.event_type != "hit_by_pitch"
-        or pbp.event_type NOT LIKE "sac%"
-        or pbp.event_type NOT LIKE "pickoff_%"
-        or pbp.event_type != "catcher_interf"
-        or pbp.event_Type != "error"
+		pbp.event_type = "single"
+        or pbp.event_type = "double"
+        or pbp.event_type = "triple"
+        or pbp.event_type = "home_run"
+		or pbp.event_type = "field_out"
+        or pbp.event_type = "field_error"
+        or pbp.event_type = "fielders_choice"
+        or pbp.event_type = "fielders_choice_out"
+        or pbp.event_type = "force_out"
+        or pbp.event_type = "grounded_into_double_play"
+        or pbp.event_type = "strikeout"
+        or pbp.event_type = "strikeout_double_play"
+        or pbp.event_type = "strikeout_triple_play"
+        or pbp.event_type = "triple_play"
+        or pbp.event_type = "double_play"
+        or pbp.event_type = "cs_double_play"
+		
         , 1, NULL))) as 'AB',
 -- BATTING AVERAGE
 	-- Hits
@@ -21,14 +31,22 @@ select
  		, 1, NULL))) / 
 	-- At Bats
      (COUNT(IF(
- 		pbp.event_type = "single"
-		or pbp.event_type != "walk"
-        or pbp.event_type != "intent_walk"
-        or pbp.event_type != "hit_by_pitch"
-        or pbp.event_type NOT LIKE "sac%"
-        or pbp.event_type NOT LIKE "pickoff_%"
-        or pbp.event_type != "catcher_interf"
-        or pbp.event_Type != "error"
+		pbp.event_type = "single"
+        or pbp.event_type = "double"
+        or pbp.event_type = "triple"
+        or pbp.event_type = "home_run"
+		or pbp.event_type = "field_out"
+        or pbp.event_type = "field_error"
+        or pbp.event_type = "fielders_choice"
+        or pbp.event_type = "fielders_choice_out"
+        or pbp.event_type = "force_out"
+        or pbp.event_type = "grounded_into_double_play"
+        or pbp.event_type = "strikeout"
+        or pbp.event_type = "strikeout_double_play"
+        or pbp.event_type = "strikeout_triple_play"
+        or pbp.event_type = "triple_play"
+        or pbp.event_type = "double_play"
+        or pbp.event_type = "cs_double_play"
          , 1, NULL))), 3) as 'BA',
 	-- ON BASE PERCENTAGE
 	-- Hits
@@ -48,13 +66,22 @@ select
 	) / 
     -- At Bats
     ((COUNT(IF(
-		pbp.event_type != "walk"
-        or pbp.event_type != "intent_walk"
-        or pbp.event_type != "hit_by_pitch"
-        or pbp.event_type NOT LIKE "sac%"
-        or pbp.event_type NOT LIKE "pickoff_%"
-        or pbp.event_type != "catcher_interf"
-        or pbp.event_Type != "error"
+		pbp.event_type = "single"
+        or pbp.event_type = "double"
+        or pbp.event_type = "triple"
+        or pbp.event_type = "home_run"
+		or pbp.event_type = "field_out"
+        or pbp.event_type = "field_error"
+        or pbp.event_type = "fielders_choice"
+        or pbp.event_type = "fielders_choice_out"
+        or pbp.event_type = "force_out"
+        or pbp.event_type = "grounded_into_double_play"
+        or pbp.event_type = "strikeout"
+        or pbp.event_type = "strikeout_double_play"
+        or pbp.event_type = "strikeout_triple_play"
+        or pbp.event_type = "triple_play"
+        or pbp.event_type = "double_play"
+        or pbp.event_type = "cs_double_play"
         , 1, NULL))) + 
 	-- Walks
 	COUNT(IF(pbp.event_type = "intent_walk" or pbp.event_type = "walk", 1, NULL)) + 
@@ -74,13 +101,22 @@ ROUND(
     ((COUNT(IF(pbp.event_type = "home_run", 1, NULL))) * 4) )
     /
     (COUNT(IF(
- 			pbp.event_type != "walk"
- 			or pbp.event_type != "intent_walk"
- 			or pbp.event_type != "hit_by_pitch"
- 			or pbp.event_type NOT LIKE "sac%"
- 			or pbp.event_type NOT LIKE "pickoff_%"
- 			or pbp.event_type != "catcher_interf"
- 			or pbp.event_Type != "error"
+		pbp.event_type = "single"
+        or pbp.event_type = "double"
+        or pbp.event_type = "triple"
+        or pbp.event_type = "home_run"
+		or pbp.event_type = "field_out"
+        or pbp.event_type = "field_error"
+        or pbp.event_type = "fielders_choice"
+        or pbp.event_type = "fielders_choice_out"
+        or pbp.event_type = "force_out"
+        or pbp.event_type = "grounded_into_double_play"
+        or pbp.event_type = "strikeout"
+        or pbp.event_type = "strikeout_double_play"
+        or pbp.event_type = "strikeout_triple_play"
+        or pbp.event_type = "triple_play"
+        or pbp.event_type = "double_play"
+        or pbp.event_type = "cs_double_play"
          , 1, NULL)))
 , 3) as 'SLG'
 from baseball.play_by_play pbp
