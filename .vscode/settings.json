@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 100,
+            "server": "rox-data-engineer.cxac4memkn4c.us-east-1.rds.amazonaws.com",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Rockies SQL DB",
+            "username": "future_data_engineer",
+            "password": "h7Uk64&#9lq-89hb$$!k",
+            "database": "baseball"
+        }
+    ]
+}
