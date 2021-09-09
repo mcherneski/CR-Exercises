@@ -91,7 +91,7 @@ select
     -- Hit by Pitch
 	COUNT(IF(pbp.event_type = "hit_by_pitch", 1, NULL)) + 
     -- Sac Fly
-	COUNT(IF(pbp.event_type = "sac_fly" or pbp.event_type = "sac_bunt", 1, NULL))), 3) as OBP,
+	COUNT(IF(pbp.event_type = "sac_fly", 1, NULL))), 3) as OBP,
 
 -- SLUGGING PERCENTAGE
 ROUND(
