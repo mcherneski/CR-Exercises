@@ -7,6 +7,7 @@ select
         or pbp.event_type = "double"
         or pbp.event_type = "triple"
         or pbp.event_type = "home_run"
+        or pbp.event_type = "batter_interference"
 		or pbp.event_type = "field_out"
         or pbp.event_type = "field_error"
         or pbp.event_type = "fielders_choice"
@@ -35,6 +36,7 @@ select
         or pbp.event_type = "double"
         or pbp.event_type = "triple"
         or pbp.event_type = "home_run"
+        or pbp.event_type = "batter_interference"
 		or pbp.event_type = "field_out"
         or pbp.event_type = "field_error"
         or pbp.event_type = "fielders_choice"
@@ -70,6 +72,7 @@ select
         or pbp.event_type = "double"
         or pbp.event_type = "triple"
         or pbp.event_type = "home_run"
+        or pbp.event_type = "batter_interference"
 		or pbp.event_type = "field_out"
         or pbp.event_type = "field_error"
         or pbp.event_type = "fielders_choice"
@@ -88,7 +91,7 @@ select
     -- Hit by Pitch
 	COUNT(IF(pbp.event_type = "hit_by_pitch", 1, NULL)) + 
     -- Sac Fly
-	COUNT(IF(pbp.event_type = "sac_fly", 1, NULL))), 3) as OBP,
+	COUNT(IF(pbp.event_type = "sac_fly" or pbp.event_type = "sac_bunt", 1, NULL))), 3) as OBP,
 
 -- SLUGGING PERCENTAGE
 ROUND(
@@ -105,6 +108,7 @@ ROUND(
         or pbp.event_type = "double"
         or pbp.event_type = "triple"
         or pbp.event_type = "home_run"
+        or pbp.event_type = "batter_interference"
 		or pbp.event_type = "field_out"
         or pbp.event_type = "field_error"
         or pbp.event_type = "fielders_choice"
@@ -123,5 +127,3 @@ from baseball.play_by_play pbp
 JOIN baseball.player_master pm on pbp.batter_id = pm.player_id
 WHERE pbp.game_id LIKE "2016%" AND pbp.game_type = "R"
 GROUP BY pbp.batter_id
-
-

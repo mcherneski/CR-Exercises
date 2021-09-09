@@ -42,7 +42,7 @@ a_venue = []
 a_venue_id = []
 
 def GetRequestedDate():
-# Get the date from the user, if they do not specify, today is selected. 
+# Get the date from the user, if they do not specify, today is selected.
     requestedDate = input("Please enter in a date. Format: YYYY-MM-DD. Leave blank for today. \n  Date: ")
     if not requestedDate:
         requestedDate = (date.today()).strftime("%Y-%m-%d")
