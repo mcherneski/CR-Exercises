@@ -7,8 +7,9 @@ Example: 2016-08-04_GamedayData.csv
 
 ## Installation
 
-In order to run GamedayExport.py, you will first need to install Python2 or 3. Once Python is installed, install the GamedayExport dependencies 
-by opening up Terminal (Mac/Linux) or Command Prompt (Windows), navigating to the GamedayExport directory and typing the following command:
+In order to run GamedayExport.py, you will first need to install Python from https://www.python.org/downloads/. Python3 is preferred but Python2 will work as well.
+Once Python is installed, install the GamedayExport dependencies by opening up Terminal (Mac/Linux) or Command Prompt (Windows), navigating to the GamedayExport 
+directory and typing the following command:
 
     pip install -r requirements.txt
 
@@ -39,6 +40,6 @@ There are two ways to run the script, with parameters and without.
 
 ## Contributing
     N/A
-    
+
 ## License
     N/A    
