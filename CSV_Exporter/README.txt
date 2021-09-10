@@ -27,12 +27,21 @@ This will install two Python modules, "Pandas" and "Requests". You can manually 
     pip install requests
 
 ## Usage
-    Open Terminal (Mac/Linux) or Command Prompt (Windows) and type: 
+    There are two ways to run the script, with and without the date parameter.
+    
+    Without parameters: Open Terminal (Mac/Linux) or Command Prompt (Windows) and type: 
 
         python GamedayExport.py 
     
     The script will then ask you for a date, please enter in your desired date in the YYYY-MM-DD format. If the date is formatted correctly, the script will ask
     for a new entry. If there is no game data for that date, the script will ask if you want to try for another date. 
+
+    With parameters: Open Terminal (Mac/Linux) or Command Prompt (Windows) and type:
+
+        python GamedayExport.py DATE
+
+    Replace DATE with your desired date, in the YYYY-MM-DD format. This is a shortcut method of running the script so you will not be asked for the date again unless there is
+    no data available for that date or if the date format is invalid. 
 
     If at any time you get stuck while using this script, press Ctrl + C to end script execution and exit. 
 
