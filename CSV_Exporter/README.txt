@@ -27,7 +27,8 @@ This will install two Python modules, "Pandas" and "Requests". You can manually 
     pip install requests
 
 ## Usage
-    There are two ways to run the script, with and without the date parameter.
+    There are two ways to run the script, with and without the date parameter. First, navigate to the directory in which the GamedayExport.py file is stored. You can do this
+    by using "cd" commands to navigate your folder structure. You can use ls -la (Mac/Linux) or dir (Windows) to check your current directory. 
     
     Without parameters: Open Terminal (Mac/Linux) or Command Prompt (Windows) and type: 
 
