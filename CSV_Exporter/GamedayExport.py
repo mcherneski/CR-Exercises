@@ -42,11 +42,14 @@ a_venue = []
 a_venue_id = []
 
 def GetRequestedDate():
-#   Check if the user specified a date in the command line arguments. If they didn't, ask for the date. 
-    inputDate = input("\n Please enter in a date. Format: YYYY-MM-DD. \n  Date: ")
+#   Check the python version. We need raw_input for 2.xx versions and input for 3.xx versions. Mac computers come with 2.xx versions by default.
+    if (sys.version).startswith("2."):
+        inputDate = raw_input("\n Please enter in a date. Format: YYYY-MM-DD. \n  Date: ")
+    if (sys.version).startswith("3."):
+        inputDate = input("\n Please enter in a date. Format: YYYY-MM-DD. \n  Date: ")
     # Verify the user input the date in our requested format. If true, return date as requested date.
-    if ValidateDate(inputDate):
-        return inputDate
+    if ValidateDate(str(inputDate)):
+        return str(inputDate)
     else:
     # If false, return GetRequestedDate() so the user has another chance to enter in a valid date. 
         return GetRequestedDate()
