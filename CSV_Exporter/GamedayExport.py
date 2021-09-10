@@ -44,11 +44,12 @@ a_venue_id = []
 def GetRequestedDate():
 #   Check if the user specified a date in the command line arguments. If they didn't, ask for the date. 
     inputDate = input("\n Please enter in a date. Format: YYYY-MM-DD. \n  Date: ")
-    #       Verify the user input the date in our requested format. If it doesn't, it shows an error.
+    # Verify the user input the date in our requested format. If true, return date as requested date.
     if ValidateDate(inputDate):
         return inputDate
     else:
-        sys.exit("")
+    # If false, return GetRequestedDate() so the user has another chance to enter in a valid date. 
+        return GetRequestedDate()
 
 def ValidateDate(valDate):
 # Function to validate the entered date. Uses regex pattern recognition to figure out if date is in YYYY-MM-DD format. 
@@ -59,7 +60,7 @@ def ValidateDate(valDate):
         return True
     else:
         print("\n Error: Please format date as YYYY-MM-DD.")
-        return False
+        return False      
 
 def InvokeApiRequest(requestURL):
 # Function responsible for the API request. Handles timeout exceptions from the requests module. 
@@ -95,41 +96,39 @@ def CreateCsvFile(requestedDate, gameday_DF):
 #       The lines below use the Pandas dataframe we create in the main function and uses the .to_csv method from Pandas to create the csv file. 
         gameday_DF.to_csv(csv_file, index=False)
         print("\n CSV Exported. Please check the working directory for your file.")
-        sys.exit()
+        return True
 #       If the file is created, call sys.exit()
     except IOError:
 #   Pandas will throw the IOError if the user has a file open with the name it wants to overwrite. This will ask them to close the file and retry the creation. 
         while "Invalid response...":
-#       Loop is to handle invalid responses to the question. 
-            reply = input("Error writing to file! You may have the file you're trying to write to open. \n Please close the file and try again. \n Try Again? [Y/N]").capitalize().strip()
+            reply = input("\n Error writing to file! You may have the file you're trying to write to open. \n Please close the file and try again. \n Try Again? [Y/N]").capitalize().strip()
             if (reply == 'Y' or reply == 'YES'):
-                CreateCsvFile(requestedDate, gameday_DF)
+                return CreateCsvFile(requestedDate, gameday_DF)
             if (reply == 'N' or reply == 'NO'):
                 print("Could not write results to file. Exiting...")
-                sys.exit()
+                return False
 
-def ExportGamedayData():
+def ExportGamedayData(requestedDate):
 #   Main function which calls other functions from above. Called on last line of program.
-#   Check if requestedDate has anything in it. If it doesn't, run GetRequestedDate(). This is in place to make sure we populate requested date no matter what. 
-    requestedDate = GetRequestedDate()
-
 #   Get user's requested date and parse to API request URI
     requestAPIUrl = "http://gd2.mlb.com/components/game/mlb/year_{}/month_{}/day_{}/grid.json".format(str(requestedDate[0:4]), str(requestedDate[5:7]), str(requestedDate[8:10]))
 #   Receive and parse the API response. 
     apiResponse = (InvokeApiRequest(requestAPIUrl)).json()
+#   Try block will except if there is no game data for that date specified. 
     try:
         gamedayDataJson = apiResponse["data"]["games"]["game"]
-#       Try block handles non-erroneus failures, such as a day which no games were played.
+#   Exception asks user if they want to try another date. 
     except:
-        reply = (input("No game data for that date. \n Try another date? [Y/N]")).capitalize().strip()
 #        Capitalize and remove white spaces so the below if statements are less prone to input variance errors. 
+        reply = (input("\n No game data for that date. \n Try another date? [Y/N]")).capitalize().strip()
         if (reply == 'Y' or reply == 'YES'):
-            ExportGamedayData()
-#           If there is no data for the specified date, we ask the user if they would like to try another rather than rerunning the program. 
+#           If user wants to try another date, restart the function. 
+            requestedDate = GetRequestedDate()
+            return ExportGamedayData(requestedDate)
         elif (reply == 'N' or reply == 'NO'):
             sys.exit("Exiting program.")
         else:
-            print("Please choose Y or N. (Yes or No)")        
+            print("\n Please choose Y or N. (Yes or No)")        
 #   Below, run the gamedayDataJson and extract values. Add them to the arrays created at top of script. 
     for game in gamedayDataJson:
         a_away_code.append(game["away_code"])
@@ -232,7 +231,28 @@ def ExportGamedayData():
         "venue_id"
     ])
 #   Using a function we created above, export the Pandas gameday dataframe to csv.
-    CreateCsvFile(requestedDate, gameday_DF)
-
+#   Since CreateCsvFile is the last function called in the main execution function, return true or false to report succsessful or failed execution. 
+#   Can be used to write automated tests later. 
+    if CreateCsvFile(requestedDate, gameday_DF):
+        return True
+    else:
+        return False
+    
 # Call the main function. This is what kicks off the 'script' 
-ExportGamedayData()
+
+try: 
+#   Check if the script was launched with the date as an argument. Validate date. If date is valid, set it as requestedDate    
+    if ValidateDate(sys.argv[1]):
+        requestedDate = sys.argv[1]
+    else:
+#       if the date is not valid, run the GetRequestedDate function. 
+        requestedDate = GetRequestedDate()
+except IndexError:
+#   IndexError is raised if there is no argument specified when script is launched. If there is no specified date, set requestedDate to GetRequestedDate()
+    requestedDate = GetRequestedDate()
+
+# Run the API function to get the data for that date. 
+if ExportGamedayData(requestedDate):
+    sys.exit('\n Completed Succsessfully!')
+else:
+    sys.exit('\n Errors during execution.')
