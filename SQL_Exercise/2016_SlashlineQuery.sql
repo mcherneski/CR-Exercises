@@ -46,7 +46,7 @@ select
         or pbp.event_type = "triple_play"
         or pbp.event_type = "double_play"
         or pbp.event_type = "cs_double_play"
-         , 1, NULL))), 4) as 'BA',
+         , 1, NULL))), 3) as 'BA',
 	-- ON BASE PERCENTAGE
 	-- Hits
 	ROUND((COUNT(IF(
@@ -57,7 +57,8 @@ select
         , 1, NULL))+
 	-- Walks
 	COUNT(IF(
-        pbp.event_type = "walk"
+		pbp.event_type = "intent_walk"
+        or pbp.event_type = "walk"
         , 1, NULL))+
 	-- HBP
     COUNT(IF(pbp.event_type = "hit_by_pitch", 1, NULL))
@@ -82,11 +83,11 @@ select
         or pbp.event_type = "cs_double_play"
         , 1, NULL))) + 
 	-- Walks
-	COUNT(IF(pbp.event_type = "walk", 1, NULL)) + 
+	COUNT(IF(pbp.event_type = "intent_walk" or pbp.event_type = "walk", 1, NULL)) + 
     -- Hit by Pitch
 	COUNT(IF(pbp.event_type = "hit_by_pitch", 1, NULL)) + 
     -- Sac Fly
-	COUNT(IF(pbp.event_type = "sac_fly", 1, NULL))), 4) as OBP,
+	COUNT(IF(pbp.event_type = "sac_fly" or pbp.event_type = "sac_fly_double_play", 1, NULL))), 3) as OBP,
 
 -- SLUGGING PERCENTAGE
 ROUND(
@@ -117,7 +118,7 @@ ROUND(
         or pbp.event_type = "double_play"
         or pbp.event_type = "cs_double_play"
          , 1, NULL)))
-, 4) as 'SLG'
+, 3) as 'SLG'
 from baseball.play_by_play pbp
 JOIN baseball.player_master pm on pbp.batter_id = pm.player_id
 WHERE pbp.game_id LIKE "2016%" AND pbp.game_type = "R"
